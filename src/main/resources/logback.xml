@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="false" scanPeriod="60 seconds" debug="false">
+
+
+    <property name="log_pattern" value="%d{MM-dd HH:mm:ss} %logger{36} - %msg%n%ex"/>
+    <property name="log_dir" value="/data/logs/esdemo/"/>
+    <property name="log_history" value="960"/>
+    <property name="log_error_history" value="960"/>
+    <property name="all_log_history" value="48"/>
+    <property name="async_queue_size" value="50000"/>
+
+    <appender name="all" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${log_dir}all.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log_dir}all.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <maxHistory>${all_log_history}</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${log_pattern}</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="async-all" class="ch.qos.logback.classic.AsyncAppender">
+        <!-- 全部日志  用ThresholdFilter 过滤器,打印INFO级别以上的log -->
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
+        <appender-ref ref="all"/>
+        <queueSize>${async_queue_size}</queueSize>
+        <!-- 异步队列超过设置大于0的阈值，就丢弃TRACE, DEBUG ,INFO 基本log；为0不丢弃 可能产生阻塞队列的put方法-->
+        <discardingThreshold>0</discardingThreshold>
+        <!-- 当队列满的时候，当前线程不会阻塞，调用阻塞队列的offer-->
+        <neverBlock>true</neverBlock>
+    </appender>
+
+
+    <!-- console output -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} %-4relative [${port}] [%thread] %-3level %logger{26} %marker %msg%n</pattern>
+        </encoder>
+    </appender>
+
+
+    <root level="debug">
+        <appender-ref ref="async-all"/>
+        <appender-ref ref="STDOUT"/>
+    </root>
+
+
+</configuration>
