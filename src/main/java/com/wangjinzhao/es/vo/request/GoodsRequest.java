@@ -45,7 +45,7 @@ public class GoodsRequest {
         json.put("goodDesc", this.getGoodDesc());
         json.put("specification", this.getSpecification());
         json.put("price", this.getPrice());
-        json.put("salesVolume", this.getSpecification());
+        json.put("salesVolume", this.getSalesVolume());
         return json;
     }
 
